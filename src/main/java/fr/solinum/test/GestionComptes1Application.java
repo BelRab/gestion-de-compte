@@ -20,5 +20,7 @@ public class GestionComptes1Application {
 		daoClient.ajouterClient(new Client("Ali", "belhadj.ali@gmail.com"));
 		daoClient.ajouterClient(new Client("Rabii", "belhadj.rabii@gmail.com"));
 		daoClient.ajouterClient(new Client("Abdessalem", "belhadj.abdessalem@gmail.com"));
+		daoClient.ajouterClient(new Client("Abdessalem", "belhadj.abdessalem@gmail.com"));
+		daoClient.supprimerClient(6);
 	}
 }
