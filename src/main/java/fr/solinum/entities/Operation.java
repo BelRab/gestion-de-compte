@@ -18,7 +18,7 @@ import javax.persistence.ManyToOne;
 public class Operation implements Serializable {
 
 	@Id @GeneratedValue(strategy=GenerationType.IDENTITY)
-	private long numPeration;
+	private long numOperation;
 	private Date dateOperation;
 	private double montant;
 	@ManyToOne
