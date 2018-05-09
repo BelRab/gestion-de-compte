@@ -22,6 +22,8 @@ import fr.solinum.entities.Versement;
 
 @EntityScan(basePackages = { "fr.solinum.entities" })
 @ComponentScan(basePackages = { "fr.solinum.dao" })
+@ComponentScan(basePackages= {"fr.solinum.metier"})
+@ComponentScan(basePackages= {"fr.solinum.web"})
 @SpringBootApplication
 public class GestionComptes1Application implements CommandLineRunner {
 
