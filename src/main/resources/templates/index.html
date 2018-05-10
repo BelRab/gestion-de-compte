@@ -56,42 +56,61 @@
 				</div>
 			</td>
 			<td>
-<!-- 				<div  th:if="${compte}"> -->
+				<div  th:if="${compte}">
+			
 			<!--Opérations sur le compte -->
-					<form th:action="@{/saveOperation}" method="get">
+			
+					<form th:action="@{/saveOperation}" method="post">
 						<div>
-							<label><h2>Opérations sur le compte :</h2></label>
-							<h3>Compte :</h3> <input type="hidden" name="codeCompte1" th:value="${compte.numCompte}"/><label th:text="${compte.numCompte}" ></label><br>
-							<input type="radio" name="operation" value="versement" checked="checked" onchange="document.getElementById('virement').style.display='block'"/>Versement
-							<input type="radio" name="operation" value="retrait" onchange="document.getElementById('virement').style.display='none'"/>Retrait
-							<input type="radio" name="operation" value="virement" onchange="document.getElementById('virement').style.display='block'"/>Virement
-							<div>
-								<label for="montant"><h3> Montant :</h3></label>
-								<input type="text" name="montant" id="montant"/>
+							<label><h2>Opérations sur le compte</h2></label>
+							
+							<h3>Compte :</h3>  <label th:text="${compte.numCompte}"></label>		<!-- Affichage de numero de compte -->
+							
+							<input type="hidden" name="compteHidden" th:value="${compte.numCompte}"/>		<!-- Le champ Hidden -->
+							
+							<input type="radio" name="operation" value="versement" 
+								onchange="document.getElementById('virement').style.display='none'"/>Versement		<!-- radio : versement -->
+							
+							<input type="radio" name="operation" value="virement"  checked="checked" 
+								onchange="document.getElementById('virement').style.display='block'"/>Virement		<!-- radio : virement -->
+							
+							<input type="radio" name="operation" value="retrait" 
+								onchange="document.getElementById('virement').style.display='none'"/>Retrait		<!-- radio : retrait -->
+							
+							<h3>Montant :</h3><input type="text" name="montant"/>		<!-- Champ montant -->
+							
+							<div id="virement">											<!-- div cahché -->
+								<h3>Vers : </h3>
+								<input type="text" name="compte2">
 							</div>
-							<div id="virement">
-								<label for="compte2"><h3>Vers le compte :</h3></label>
-								<input type="text" name="codeCompte2" id="compte2"/>
-							</div><br>
-								<div th:if="${operation}">
-								<label th:text="${operation}"></label>
-							</div>
-								<label th:text="${montant}"></label>
-							<input type="submit" value="Envoyer"/>
-							<label th:text="${montant}"></label>
-										<label th:text="${operation}"></label>
-										
-						</div>	
+							<input type="submit" value="Save"/>
+						</div>
 					</form>
-					<div>
+						<!-- Consulter les operations dans un tableau-->
 						
-					</div>
-<!-- 				</div> -->
+						<table border="1">
+							<tr>
+								<th>Type de l'operation</th><th>Date de création</th><th>Montant</th>
+							</tr>
+							<tr th:each="opera:${operations}">		<!-- for each opera in operations faire le boucle sur la ligne -->
+								<td><label th:text="${opera.class.simpleName}"></label></td>
+								<td><label th:text="${opera.dateOperation}"></label></td>
+								<td><label th:text="${opera.montant}"></label></td>								
+							</tr>
+						</table>
+				</div>
 			</td>
-		
-		
-		
 		</tr>
 	</table>
 </body>
 </html>
+
+
+
+
+
+
+
+
+
+

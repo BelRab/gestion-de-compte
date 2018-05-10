@@ -29,8 +29,9 @@ public class DaoOperationImplementation implements DaoOperation {
 	@Override
 	public List<Operation> consulterOperations(String codeCompte) {
 
-		Query query = entityManager.createQuery("select operations from Operation operations where compte=codeCompte");
-
+		Query query = entityManager
+				.createQuery("select operations from Operation operations where operations.compte.numCompte like :codeCompte ")
+				.setParameter("codeCompte", codeCompte);
 		List<Operation> operations = query.getResultList();
 		return operations;
 	}
