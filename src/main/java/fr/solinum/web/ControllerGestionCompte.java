@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import fr.solinum.entities.Compte;
 import fr.solinum.entities.Operation;
+import fr.solinum.exception.FormsValidationException;
 import fr.solinum.metier.InterfaceMetier;
 
 @Controller
@@ -29,15 +30,22 @@ public class ControllerGestionCompte {
 
 	@RequestMapping(value = { "/consulter" }, method = RequestMethod.GET)
 
-		public String consulterCompte(@RequestParam(name = "codeCompte", required = false) String numCompte, Model model) {
+		public String consulterCompte(@RequestParam(name = "codeCompte", required = true) String numCompte, Model model) {
 
-			Compte compte = interfaceMetier.consulterCompte(numCompte);		// avec find dans la couche dao
+			try {
+				Compte compte = interfaceMetier.consulterCompte(numCompte);		// avec find dans la couche dao
 
-			List<Operation> operations = interfaceMetier.listeOperation(numCompte);		// avec select dans la couche dao
+				List<Operation> operations = interfaceMetier.listeOperation(numCompte);		// avec select dans la couche dao
+			
+				model.addAttribute("compte", compte);
 
-			model.addAttribute("compte", compte);
+				model.addAttribute("operations", operations);
 
-			model.addAttribute("operations", operations);
+			} catch (FormsValidationException e2) {
+
+				model.addAttribute("exception", e2.getMessage());
+
+			}
 
 			return "index";
 

@@ -4,10 +4,11 @@ import java.util.List;
 
 import fr.solinum.entities.Compte;
 import fr.solinum.entities.Operation;
+import fr.solinum.exception.FormsValidationException;
 
 public interface InterfaceMetier {
 	
-	public Compte consulterCompte(String idCompte);
+	public Compte consulterCompte(String idCompte) throws FormsValidationException;
 	public void verser(String codeCompte , double montant);
 	public void retirer (String codeCompte , double montant);
 	public void virement(String codeCompte1, String codeCompte2 , double montant);

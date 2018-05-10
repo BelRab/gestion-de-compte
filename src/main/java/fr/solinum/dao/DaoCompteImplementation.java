@@ -21,9 +21,10 @@ public class DaoCompteImplementation implements DaoCompte{
 	}
 	@Override
 	public Compte consulterUnCompte(String idCompte) {
-		
-		Compte compte = entityManager.find(Compte.class, idCompte);
-		return compte;
+
+			Compte compte = entityManager.find(Compte.class, idCompte);
+
+			return compte;
 	}
 	@Override
 	public void misAJourCompte(Compte compte) {

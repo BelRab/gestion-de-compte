@@ -15,6 +15,7 @@ import fr.solinum.entities.CompteCourant;
 import fr.solinum.entities.Operation;
 import fr.solinum.entities.Retrait;
 import fr.solinum.entities.Versement;
+import fr.solinum.exception.FormsValidationException;
 
 @Service
 @Transactional // on va voir si on peut l'enlever
@@ -28,13 +29,17 @@ public class MetierImplementation implements InterfaceMetier {
 	DaoOperation daoOperation;
 
 	@Override
-	public Compte consulterCompte(String idCompte) {
+	public Compte consulterCompte(String idCompte) throws FormsValidationException{
 
+		if(idCompte.equals("")) {
+			throw new FormsValidationException("Le champ saisi est vide.");
+		}
+		
 		Compte compte = daoCompte.consulterUnCompte(idCompte);
 
-		if (compte == null) {
+		if (compte == null) {	// il n'a pas trouver
 
-			throw new RuntimeException("Le compte n'existe pas !");
+			throw new FormsValidationException(String.format("Le compte [ %s ] n'existe pas .", idCompte));
 
 		}
 
