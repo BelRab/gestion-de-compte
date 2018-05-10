@@ -12,6 +12,7 @@ import fr.solinum.dao.DaoCompte;
 import fr.solinum.dao.DaoOperation;
 import fr.solinum.entities.Compte;
 import fr.solinum.entities.CompteCourant;
+import fr.solinum.entities.CompteEpargne;
 import fr.solinum.entities.Operation;
 import fr.solinum.entities.Retrait;
 import fr.solinum.entities.Versement;
@@ -29,17 +30,17 @@ public class MetierImplementation implements InterfaceMetier {
 	DaoOperation daoOperation;
 
 	@Override
-	public Compte consulterCompte(String idCompte) throws FormsValidationException{
+	public Compte consulterCompte(String idCompte) throws FormsValidationException {
 
-		if(idCompte.equals("")) {
+		if (idCompte.equals("")) {
 			throw new FormsValidationException("Le champ saisi est vide.");
 		}
-		
+
 		Compte compte = daoCompte.consulterUnCompte(idCompte);
 
-		if (compte == null) {	// il n'a pas trouver
+		if (compte == null) {
 
-			throw new FormsValidationException(String.format("Le compte [ %s ] n'existe pas .", idCompte));
+			throw new FormsValidationException(String.format("Le compte saisie [ %s ] n'existe pas .", idCompte));
 
 		}
 
@@ -47,9 +48,15 @@ public class MetierImplementation implements InterfaceMetier {
 	}
 
 	@Override
-	public void verser(String codeCompte, double montant) {
+	public void verser(String codeCompte, double montant) throws FormsValidationException {
 
 		Compte compte = daoCompte.consulterUnCompte(codeCompte);
+		
+		if (compte == null) {
+
+			throw new FormsValidationException(String.format("Le compte saisie [ %s ] n'existe pas .", codeCompte));
+
+		}
 
 		if (montant > 0) {
 
@@ -63,63 +70,90 @@ public class MetierImplementation implements InterfaceMetier {
 
 		} else {
 
-			throw new RuntimeException(String.format("Le montant % n'est pas valide!", montant));
+			throw new FormsValidationException(String.format("Le montant saisie [ %s ] n'est pas valide!", montant));
 		}
 	}
 
 	@Override
-	public void retirer(String codeCompte, double montant) {
+	public void retirer(String codeCompte, double montant) throws FormsValidationException {
+
 		Compte compte = daoCompte.consulterUnCompte(codeCompte);
+		
+		if (compte == null) {
 
+			throw new FormsValidationException(String.format("Le compte saisie [ %s ] n'existe pas .", codeCompte));
+
+		}
+		
 		if (compte instanceof CompteCourant) {
-			if (montant < compte.getSolde() + ((CompteCourant) compte).getDecouvert()) {
 
-				Retrait retrait = new Retrait(montant, new Date(), compte);
+			if (montant > 0) {		// si le montant positif
+			
+				if (montant < compte.getSolde() + ((CompteCourant) compte).getDecouvert()) {		// 	si le solde est superieur au solde
 
-				daoOperation.ajouterOperation(retrait);
+					Retrait retrait = new Retrait(montant, new Date(), compte);
 
-				compte.setSolde(compte.getSolde() - montant);
+					daoOperation.ajouterOperation(retrait);
 
-				daoCompte.misAJourCompte(compte);
-			} else {
+					compte.setSolde(compte.getSolde() - montant);
 
-				throw new RuntimeException(
-						String.format("Solde insuffisant , le montant % superieur au solde", montant));
+					daoCompte.misAJourCompte(compte);
+				} else {
 
+					throw new FormsValidationException(
+							String.format("Solde insuffisant , le montant % superieur au solde.", montant));
+				}
+			} else { // si le montant est negatif
+
+				throw new FormsValidationException(String.format("Le montant [ %s ] saisie est invalide.", montant));
 			}
-		} else {
 
-			if (montant < compte.getSolde()) {
+		} else if (compte instanceof CompteEpargne) { // si le compte est compte epargne
 
-				Retrait retrait = new Retrait(montant, new Date(), compte);
+			if (montant > 0) {
+				if (montant < compte.getSolde()) {
 
-				daoOperation.ajouterOperation(retrait);
+					Retrait retrait = new Retrait(montant, new Date(), compte);
 
-				compte.setSolde(compte.getSolde() - montant);
+					daoOperation.ajouterOperation(retrait);
 
-				daoCompte.misAJourCompte(compte);
-			} else {
+					compte.setSolde(compte.getSolde() - montant);
 
-				throw new RuntimeException(
-						String.format("Solde insuffisant , le montant % superieur au solde", montant));
+					daoCompte.misAJourCompte(compte);
+				} else {
 
+					throw new FormsValidationException(
+							String.format("Solde insuffisant , le montant % superieur au solde", montant));
+				}
+
+			}else {
+
+				throw new FormsValidationException(String.format("Le montant [ %s ] saisie est invalide.", montant));
+				
 			}
 		}
 	}
 
 	@Override
-	public void virement(String codeCompte1, String codeCompte2, double montant) {
+	public void virement(String codeCompte1, String codeCompte2, double montant) throws FormsValidationException {
 
-		retirer(codeCompte1,montant);
+		if(codeCompte1.equals(codeCompte2)) {
+			throw new FormsValidationException("Impossible de faire le virement vers le meme compte.");
+		}
+		if(codeCompte2.equals("")) {
+			throw new FormsValidationException(String.format("Le compte [ %s ] ne doit pas etre vide", codeCompte2));
+		}
 		
+		retirer(codeCompte1, montant);
+
 		verser(codeCompte2, montant);
 	}
 
 	@Override
 	public List<Operation> listeOperation(String codeCompte) {
-	
-		List<Operation> operations=daoOperation.consulterOperations(codeCompte);
-		
+
+		List<Operation> operations = daoOperation.consulterOperations(codeCompte);
+
 		return operations;
 	}
 

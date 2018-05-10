@@ -83,8 +83,11 @@
 							<div id="virement">											<!-- div cahché -->
 								<h3>Vers : </h3>
 								<input type="text" name="compte2">
+								<div th:text="${#httpServletRequest.getParameter('error')}">
+								</div>
 							</div>
 							<input type="submit" value="Save"/>
+							
 						</div>
 					</form>
 						<!-- Consulter les operations dans un tableau-->

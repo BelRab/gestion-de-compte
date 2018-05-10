@@ -30,49 +30,62 @@ public class ControllerGestionCompte {
 
 	@RequestMapping(value = { "/consulter" }, method = RequestMethod.GET)
 
-		public String consulterCompte(@RequestParam(name = "codeCompte", required = true) String numCompte, Model model) {
+	public String consulterCompte(@RequestParam(name = "codeCompte", required = true) String numCompte, Model model) {
 
-			try {
-				Compte compte = interfaceMetier.consulterCompte(numCompte);		// avec find dans la couche dao
+		try {
+			Compte compte = interfaceMetier.consulterCompte(numCompte); // avec find dans la couche dao
 
-				List<Operation> operations = interfaceMetier.listeOperation(numCompte);		// avec select dans la couche dao
-			
-				model.addAttribute("compte", compte);
+			List<Operation> operations = interfaceMetier.listeOperation(numCompte); // avec select dans la couche dao
 
-				model.addAttribute("operations", operations);
+			model.addAttribute("compte", compte);
 
-			} catch (FormsValidationException e2) {
+			model.addAttribute("operations", operations);
 
-				model.addAttribute("exception", e2.getMessage());
+		} catch (FormsValidationException e2) {
 
-			}
-
-			return "index";
+			model.addAttribute("exception", e2.getMessage());
 
 		}
 
+		return "index";
+
+	}
 
 	@RequestMapping(value = { "/saveOperation" }, method = RequestMethod.POST)
 
-	public String saveOperation(@RequestParam(name = "compteHidden") String compteHidden, // valeur de champs caché
-																							// [compte1]
-			@RequestParam(name = "operation") String operation, // valeur de l'operation
-			@RequestParam(name = "compte2") String compte2, // valeur de compte2
-			@RequestParam(name = "montant") double montant) { // valeur de monatnt
+	public String saveOperation(Model model,@RequestParam(name = "compteHidden") String compteHidden, 
+   											@RequestParam(name = "operation") String operation, // valeur de l'operation
+											@RequestParam(name = "compte2") String compte2, // valeur de compte2
+											@RequestParam(name = "montant") double montant) { // valeur de monatnt
 
 		if (operation.equals("versement")) {
 
-			interfaceMetier.verser(compteHidden, montant);
+			try {
+				interfaceMetier.verser(compteHidden, montant);
+			} catch (FormsValidationException e) {
+				model.addAttribute("exception1", e.getMessage());
+				return "redirect:/consulter?codeCompte=" + compteHidden + "&error=" +e.getMessage();
+			}
 
 		}
 
 		else if (operation.equals("virement")) {
 
-			interfaceMetier.virement(compteHidden, compte2, montant);
-			
-		} else if (operation.equals("retrait")){
+			try {
+				interfaceMetier.virement(compteHidden, compte2, montant);
+			} catch (FormsValidationException e) {
+				model.addAttribute("exception1", e.getMessage());
+				return "redirect:/consulter?codeCompte=" + compteHidden + "&error=" +e.getMessage();
+			}
 
-			interfaceMetier.retirer(compteHidden, montant);
+		} else if (operation.equals("retrait")) {
+
+			try {
+				interfaceMetier.retirer(compteHidden, montant);
+			} catch (FormsValidationException e) {
+				model.addAttribute("exception1", e.getMessage());
+				return "redirect:/consulter?codeCompte=" + compteHidden + "&error=" +e.getMessage();
+			}
 
 		}
 
@@ -80,5 +93,4 @@ public class ControllerGestionCompte {
 
 	}
 
-	
 }
