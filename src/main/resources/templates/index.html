@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" 
+	  xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Gestions de comptes</title>
+<link rel="stylesheet" type="text/css" href="../static/css/bootstrap.min.css"/>
+</head>
+<body>
+	
+	<!-- Poour l'instant je veux voir comment je prend le numero de compte et renvoyer à la page -->
+	<table>
+		<tr>
+			<td>		
+			
+			<!--Boite de saisir le numero de compte -->
+			
+				<div>
+					<label>Consultaion des comptes</label>
+					
+					<form th:action="@{/consulter}" method="get">
+						
+						<label for="codeCompte">Veuillez saisir le numero de compte.</label><br>
+						<input type="text" name="codeCompte" id="codeCompte"/>
+						
+						<label for="ok"></label>
+						<input type="submit" value="Ok" id="ok"/>
+					
+					</form>
+				</div>
+				
+			<!-- Afficher les informations sur le compte choisi -->
+				<div  th:if="${compte}">
+					<div>
+						<h2>Informations sur le compte :</h2>
+						<h3>Client :</h3>				<label th:text="${compte.client.nomClient}" ></label><br>
+	
+						<h3>Le code du compte :</h3>	<label th:text="${compte.numCompte}" ></label><br>
+	
+						<h3>Solde du compte :</h3>		<label th:text="${compte.solde}" ></label><br>
+	
+						<h3>La date de création :</h3>	<label th:text="${compte.dateCreation}" ></label><br>
+	
+														<div th:if="${compte.class.simpleName=='CompteCourant'}" >
+						<h3>Le type de compte :</h3>		Compte courant <br>
+														<h3>Découvert :</h3> 
+															<label th:text="${compte.decouvert}"></label>
+														</div>
+														<div th:if="${compte.class.simpleName=='CompteEpargne'}" >
+						<h3>Le type de compte :</h3>		Compte épargne <br>
+														<h3>Taux d'interet :</h3>	
+															 <label th:text="${compte.taux}"></label>
+														</div>
+						
+					</div>
+				</div>
+			</td>
+			<td>
+<!-- 				<div  th:if="${compte}"> -->
+			<!--Opérations sur le compte -->
+					<form th:action="@{/saveOperation}" method="get">
+						<div>
+							<label><h2>Opérations sur le compte :</h2></label>
+							<h3>Compte :</h3> <input type="hidden" name="codeCompte1" th:value="${compte.numCompte}"/><label th:text="${compte.numCompte}" ></label><br>
+							<input type="radio" name="operation" value="versement" checked="checked" onchange="document.getElementById('virement').style.display='block'"/>Versement
+							<input type="radio" name="operation" value="retrait" onchange="document.getElementById('virement').style.display='none'"/>Retrait
+							<input type="radio" name="operation" value="virement" onchange="document.getElementById('virement').style.display='block'"/>Virement
+							<div>
+								<label for="montant"><h3> Montant :</h3></label>
+								<input type="text" name="montant" id="montant"/>
+							</div>
+							<div id="virement">
+								<label for="compte2"><h3>Vers le compte :</h3></label>
+								<input type="text" name="codeCompte2" id="compte2"/>
+							</div><br>
+								<div th:if="${operation}">
+								<label th:text="${operation}"></label>
+							</div>
+								<label th:text="${montant}"></label>
+							<input type="submit" value="Envoyer"/>
+							<label th:text="${montant}"></label>
+										<label th:text="${operation}"></label>
+										
+						</div>	
+					</form>
+					<div>
+						
+					</div>
+<!-- 				</div> -->
+			</td>
+		
+		
+		
+		</tr>
+	</table>
+</body>
+</html>
