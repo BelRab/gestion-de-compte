@@ -31,20 +31,23 @@
 			<div class="panel-body">
 				<form th:action="@{/consulter}" method="get">
 					<div class="form-row">
-						<div class="col">
+						<div class="col-xs-7">
 							<input type="text" name="codeCompte" class="form-control"
 								placeholder="Entrer le code de compte">
 						</div>
-						<div class="col">
+						<div class="col-xs-4">
 							<button type="submit" class="btn btn-default">Search</button>
 						</div>
 					</div>
 				</form>
 			</div>
 		</div>
-		<div>
-			<label></label> <label th:text="${exception}"></label>
+		<div class="alert alert-warning" th:if="${exception}">
+			<strong>Attention!</strong> <label th:text="${exception}"></label>
+			<div th:text="${#httpServletRequest.getParameter('error')}"></div>
 		</div>
+
+
 		<div th:if="${compte}">
 			<div>
 				<h2>
@@ -94,50 +97,87 @@
 
 			<div>
 				<!--Opérations sur le compte -->
+				<div class="form-group row">
+					<div class="col-xs-4">
+						<div class="panel panel-default">
+							<div class="panel-heading">Opérations sur le compte</div>
+							<div class="panel-body">
+								<div class="form-row">
+									<div class="col-xs-4">Compte</div>
+									<div class="col-xs-4">
+										<label th:text="${compte.numCompte}"></label>
+									</div>
+									<div class="form-row">
+										<form class="form-horizontal" th:action="@{/saveOperation}"
+											method="post">
+											<div>
+												<input type="hidden" name="compteHidden"
+													th:value="${compte.numCompte}" />
+												<div class="radio-inline">
+													<label><input type="radio" name="operation"
+														value="versement"
+														onchange="document.getElementById('virement').style.display='none'" />Versement
+													</label>
+												</div>
+												<div class="radio-inline">
+													<label><input type="radio" name="operation"
+														value="virement" checked="checked"
+														onchange="document.getElementById('virement').style.display='block'" />Virement</label>
+												</div>
+												<div class="radio-inline">
+													<label><input type="radio" name="operation"
+														value="retrait"
+														onchange="document.getElementById('virement').style.display='none'" />Retrait
+													</label>
+												</div>
+												<div class="form-group">
+													<div class="col-sm-12">
+														<input type="text" name="montant" class="form-control"
+															placeholder="Entrer le montant">
+													</div>
+												</div>
 
-				<form th:action="@{/saveOperation}" method="post">
-					<div>
-						<label><h2>Opérations sur le compte</h2></label>
+												<div class="form-group">
+													<div id="virement">
+														<div class="col-sm-12">
+															<input type="text" name="compte2" class="form-control"
+																placeholder="Entrer le code de compte">
+														</div>
+													</div>
+												</div>
 
-						<h3>Compte :</h3>
-						<label th:text="${compte.numCompte}"></label> <input type="hidden"
-							name="compteHidden" th:value="${compte.numCompte}" /> <input
-							type="radio" name="operation" value="versement"
-							onchange="document.getElementById('virement').style.display='none'" />Versement
+												<div class="form-group">
+													<div class="col-sm-12">
+														<button type="submit" class="btn btn-default">Submit</button>
+													</div>
+												</div>
+											</div>
+										</form>
 
-						<input type="radio" name="operation" value="virement"
-							checked="checked"
-							onchange="document.getElementById('virement').style.display='block'" />Virement
-
-						<input type="radio" name="operation" value="retrait"
-							onchange="document.getElementById('virement').style.display='none'" />Retrait
-
-						<h3>Montant :</h3>
-						<input type="text" name="montant" />
-
-						<div id="virement">
-							<h3>Vers :</h3>
-							<input type="text" name="compte2">
-							<div th:text="${#httpServletRequest.getParameter('error')}">
+									</div>
+								</div>
 							</div>
 						</div>
-						<input type="submit" value="Save" />
 					</div>
-				</form>
-
-				<table border="1">
-					<tr>
-						<th>Type de l'operation</th>
-						<th>Date de création</th>
-						<th>Montant</th>
-					</tr>
-					<tr th:each="opera:${operations}">
-						<td><label th:text="${opera.class.simpleName}"></label></td>
-						<td><label th:text="${opera.dateOperation}"></label></td>
-						<td><label th:text="${opera.montant}"></label></td>
-					</tr>
-				</table>
-
+					<div class="col-xs-8">
+						<table class="table">
+							<thead>
+								<tr class="active">
+									<th>Type de l'operation</th>
+									<th>Date de création</th>
+									<th>Montant</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr th:each="opera:${operations}">
+									<td><label th:text="${opera.class.simpleName}"></label></td>
+									<td><label th:text="${opera.dateOperation}"></label></td>
+									<td><label th:text="${opera.montant}"></label></td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+				</div>
 			</div>
 		</div>
 	</div>
